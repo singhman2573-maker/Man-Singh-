@@ -1,95 +1,148 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suraj Gram - Pro</title>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <title>ManSingh Gram Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: sans-serif; background: #fafafa; margin: 0; padding-bottom: 60px; }
-        .header { background: white; border-bottom: 1px solid #dbdbdb; padding: 10px; position: sticky; top: 0; text-align: center; font-weight: bold; font-size: 20px; }
-        .feed { max-width: 500px; margin: auto; padding: 10px; }
-        .post-card { background: white; border: 1px solid #dbdbdb; margin-bottom: 20px; border-radius: 8px; overflow: hidden; }
-        .post-img { width: 100%; background: #eee; min-height: 300px; object-fit: cover; }
-        .post-info { padding: 10px; }
-        .like-btn { cursor: pointer; color: #ed4956; font-size: 20px; }
-        
-        /* Bottom Navigation */
-        .nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #dbdbdb; display: flex; justify-content: space-around; padding: 10px 0; }
-        .add-post { background: #0095f6; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
+        body { background-color: #fafafa; font-family: sans-serif; padding-bottom: 70px; overflow-x: hidden; }
+        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #dbdbdb; display: flex; justify-content: space-around; padding: 12px 0; z-index: 100; }
+        .post-card { background: white; border: 1px solid #dbdbdb; margin-bottom: 15px; border-radius: 8px; overflow: hidden; }
+        .header { background: white; border-bottom: 1px solid #dbdbdb; padding: 10px; position: sticky; top: 0; z-index: 50; display: flex; justify-content: space-between; align-items: center; }
+        .chat-window { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: white; z-index: 200; transition: 0.3s; }
+        .chat-active { right: 0; }
+        .reel-container { display: none; background: black; height: 100vh; color: white; }
     </style>
 </head>
 <body>
 
-<div class="header">SurajGram</div>
+    <div id="home-page">
+        <div class="header shadow-sm px-4">
+            <h1 class="text-2xl font-bold italic text-gray-800">SurajGram</h1>
+            <div class="flex space-x-5 items-center">
+                <i class="far fa-plus-square text-2xl cursor-pointer" onclick="createNewPost()"></i>
+                <i class="fab fa-facebook-messenger text-2xl text-blue-600 cursor-pointer" onclick="toggleChat()"></i>
+            </div>
+        </div>
 
-<div class="feed" id="feed">
+        <div id="feed" class="max-w-md mx-auto mt-4 p-2">
+            <p class="text-center text-gray-400 mt-10">Duniya dekh rahi hai...</p>
+        </div>
     </div>
 
-<div class="nav">
-    <span>🏠</span>
-    <button class="add-post" onclick="addNewPost()">+ Post</button>
-    <span>👤</span>
-</div>
+    <div id="reels-page" class="reel-container flex flex-col justify-center items-center">
+        <h2 class="text-xl">Reels Section</h2>
+        <p class="text-gray-400">Videos loading...</p>
+        <button onclick="showSection('home')" class="mt-4 bg-white text-black px-4 py-2 rounded">Back to Home</button>
+    </div>
 
-<script>
-    const firebaseConfig = {
-  apiKey: "AIzaSyDW5_kfC4EoS7AFsvNQkkmlIE_Rer03FOM",
-  authDomain: "mangram-c2f6a.firebaseapp.com",
-  projectId: "mangram-c2f6a",
-  storageBucket: "mangram-c2f6a.firebasestorage.app",
-  messagingSenderId: "949533506567",
-  appId: "1:949533506567:web:5ce698bfc0394d7ef5fea2",
-  measurementId: "G-YL57J7K70G"
-};
-    
+    <div id="chat-ui" class="chat-window p-4 flex flex-col">
+        <div class="flex items-center justify-between border-b pb-2 mb-4">
+            <i class="fas fa-arrow-left text-xl cursor-pointer" onclick="toggleChat()"></i>
+            <h2 class="font-bold text-lg">Man Singh - Inbox</h2>
+            <div></div>
+        </div>
+        <div id="messages" class="flex-1 overflow-y-auto space-y-3 p-2">
+            <div class="bg-gray-100 p-2 rounded-lg max-w-[80%]">Welcome to SurajGram Chat! 👋</div>
+        </div>
+        <div class="flex mt-2 border-t pt-2">
+            <input id="msg-input" type="text" placeholder="Message..." class="flex-1 border p-2 rounded-l-lg outline-none">
+            <button onclick="sendMsg()" class="bg-blue-500 text-white px-4 rounded-r-lg">Send</button>
+        </div>
+    </div>
 
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    <div class="nav-bottom shadow-lg">
+        <button onclick="showSection('home')"><i class="fas fa-home text-2xl"></i></button>
+        <button onclick="alert('Search feature loading...')"><i class="fas fa-search text-2xl"></i></button>
+        <button onclick="createNewPost()" class="text-blue-500"><i class="fas fa-plus-circle text-3xl"></i></button>
+        <button onclick="showSection('reels')"><i class="fas fa-play-circle text-2xl"></i></button>
+        <button onclick="alert('Profile Page loading...')"><i class="fas fa-user-circle text-2xl"></i></button>
+    </div>
 
-    // 2. Post dikhane ka function (Real-time Sync)
-    db.collection("posts").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
-        let feedHTML = "";
-        snapshot.forEach((doc) => {
-            let post = doc.data();
-            feedHTML += `
-                <div class="post-card">
-                    <img src="${post.imageURL || 'https://via.placeholder.com/500'}" class="post-img">
-                    <div class="post-info">
-                        <strong>${post.username}</strong>: ${post.caption}
-                        <div class="like-btn" onclick="likePost('${doc.id}', ${post.likes})">❤️ ${post.likes}</div>
-                    </div>
-                </div>
-            `;
-        });
-        document.getElementById("feed").innerHTML = feedHTML;
-    });
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
-    // 3. Naya Post add karne ka function
-    function addNewPost() {
-        const caption = prompt("Write a caption:");
-        if (caption) {
-            db.collection("posts").add({
-                username: "User_1",
-                caption: caption,
-                likes: 0,
-                imageURL: "https://picsum.photos/500/500?random=" + Math.random(),
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDW5_kfC4EoS7AFsvNQkkmlIE_Rer03FOM",
+            authDomain: "mangram-c2f6a.firebaseapp.com",
+            projectId: "mangram-c2f6a",
+            storageBucket: "mangram-c2f6a.firebasestorage.app",
+            messagingSenderId: "949533506567",
+            appId: "1:949533506567:web:5ce698bfc0394d7ef5fea2"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Section Switcher
+        function showSection(name) {
+            if(name === 'reels') {
+                document.getElementById('home-page').style.display = 'none';
+                document.getElementById('reels-page').style.display = 'flex';
+            } else {
+                document.getElementById('home-page').style.display = 'block';
+                document.getElementById('reels-page').style.display = 'none';
+            }
+        }
+
+        // Toggle Chat Window
+        function toggleChat() {
+            document.getElementById('chat-ui').classList.toggle('chat-active');
+        }
+
+        // Load Posts
+        function loadFeed() {
+            db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+                let html = "";
+                snapshot.forEach(doc => {
+                    let post = doc.data();
+                    html += `
+                    <div class="post-card shadow-sm">
+                        <div class="p-3 font-semibold flex items-center border-b">
+                            <div class="w-8 h-8 bg-gradient-to-tr from-yellow-400 to-purple-600 rounded-full mr-2"></div>
+                            ${post.username || 'Man Singh'}
+                        </div>
+                        <img src="${post.imageUrl || 'https://picsum.photos/500/500?random=' + Math.random()}" class="w-full h-80 object-cover">
+                        <div class="p-3 text-left">
+                            <div class="flex space-x-4 mb-2">
+                                <i class="far fa-heart text-2xl cursor-pointer hover:text-red-500" onclick="this.classList.toggle('fas'); this.classList.toggle('text-red-500')"></i>
+                                <i class="far fa-comment text-2xl"></i>
+                                <i class="far fa-paper-plane text-2xl"></i>
+                            </div>
+                            <p class="text-sm"><span class="font-bold">${post.username || 'Man Singh'}</span> ${post.caption}</p>
+                        </div>
+                    </div>`;
+                });
+                document.getElementById("feed").innerHTML = html || "<p class='mt-10'>No posts yet.</p>";
             });
         }
-    }
 
-    // 4. Like function
-    function likePost(id, currentLikes) {
-        db.collection("posts").doc(id).update({
-            likes: currentLikes + 1
-        });
-    }
-</script>
+        function createNewPost() {
+            let cap = prompt("Post caption:");
+            if(cap) {
+                db.collection("posts").add({
+                    username: "Man Singh", 
+                    caption: cap,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+        }
 
+        function sendMsg() {
+            let input = document.getElementById('msg-input');
+            if(input.value) {
+                let msgDiv = document.createElement('div');
+                msgDiv.className = "bg-blue-500 text-white p-2 rounded-lg max-w-[80%] self-end ml-auto";
+                msgDiv.innerText = input.value;
+                document.getElementById('messages').appendChild(msgDiv);
+                input.value = "";
+            }
+        }
+
+        window.onload = loadFeed;
+    </script>
 </body>
 </html>
-
-
