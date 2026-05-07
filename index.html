@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suraj Gram - Pro</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #fafafa; margin: 0; padding-bottom: 60px; }
+        .header { background: white; border-bottom: 1px solid #dbdbdb; padding: 10px; position: sticky; top: 0; text-align: center; font-weight: bold; font-size: 20px; }
+        .feed { max-width: 500px; margin: auto; padding: 10px; }
+        .post-card { background: white; border: 1px solid #dbdbdb; margin-bottom: 20px; border-radius: 8px; overflow: hidden; }
+        .post-img { width: 100%; background: #eee; min-height: 300px; object-fit: cover; }
+        .post-info { padding: 10px; }
+        .like-btn { cursor: pointer; color: #ed4956; font-size: 20px; }
+        
+        /* Bottom Navigation */
+        .nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #dbdbdb; display: flex; justify-content: space-around; padding: 10px 0; }
+        .add-post { background: #0095f6; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="header">SurajGram</div>
+
+<div class="feed" id="feed">
+    </div>
+
+<div class="nav">
+    <span>🏠</span>
+    <button class="add-post" onclick="addNewPost()">+ Post</button>
+    <span>👤</span>
+</div>
+
+<script>
+    // 1. Firebase Config (Apni keys yahan daalein)
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT.appspot.com",
+        messagingSenderId: "YOUR_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // 2. Post dikhane ka function (Real-time Sync)
+    db.collection("posts").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+        let feedHTML = "";
+        snapshot.forEach((doc) => {
+            let post = doc.data();
+            feedHTML += `
+                <div class="post-card">
+                    <img src="${post.imageURL || 'https://via.placeholder.com/500'}" class="post-img">
+                    <div class="post-info">
+                        <strong>${post.username}</strong>: ${post.caption}
+                        <div class="like-btn" onclick="likePost('${doc.id}', ${post.likes})">❤️ ${post.likes}</div>
+                    </div>
+                </div>
+            `;
+        });
+        document.getElementById("feed").innerHTML = feedHTML;
+    });
+
+    // 3. Naya Post add karne ka function
+    function addNewPost() {
+        const caption = prompt("Write a caption:");
+        if (caption) {
+            db.collection("posts").add({
+                username: "User_1",
+                caption: caption,
+                likes: 0,
+                imageURL: "https://picsum.photos/500/500?random=" + Math.random(),
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        }
+    }
+
+    // 4. Like function
+    function likePost(id, currentLikes) {
+        db.collection("posts").doc(id).update({
+            likes: currentLikes + 1
+        });
+    }
+</script>
+
+</body>
+</html>
+
+
