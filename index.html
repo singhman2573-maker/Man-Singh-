@@ -3,146 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Surajpal - VibeNet SuperApp</title>
+    <title>VibeNet Pro - Mansingh</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg: #fafafa; --text: #1a1a1a; --card: #ffffff; --primary: #0095f6; }
-        .dark-theme { --bg: #050505; --text: #f5f5f5; --card: #121212; --primary: #1da1f2; }
-        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; transition: 0.4s; overflow-x: hidden; }
+        :root { --bg: #000; --text: #fff; --border: #262626; }
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; overflow-x: hidden; }
         
-        .ticker-bar { background: #000; color: #00ff00; padding: 10px; overflow: hidden; white-space: nowrap; font-family: monospace; font-size: 11px; }
-        .ticker-scroll { display: inline-block; animation: scroll 30s linear infinite; }
-        @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-
-        .service-card { background: var(--card); border: 1px solid #3332; border-radius: 20px; transition: 0.3s; padding: 15px; text-align: center; }
-        .service-card:active { transform: scale(0.95); }
+        .reels-wrapper { height: 100vh; scroll-snap-type: y mandatory; overflow-y: scroll; scrollbar-width: none; display: none; }
+        .reel-unit { height: 100vh; scroll-snap-align: start; position: relative; background: #111; }
         
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #3333; z-index: 2000; }
-        .premium-blur { filter: blur(25px); pointer-events: none; }
+        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #000; border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
         
-        /* Dubai Countdown Timer */
-        #countdown { background: linear-gradient(90deg, #b8860b, #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
+        #chat-room { display: none; position: fixed; top: 0; right: 0; width: 100%; height: 100%; background: #000; z-index: 2000; }
         
-        .tab-content { display: none; padding-bottom: 100px; }
-        .active-tab { display: block; }
+        /* AD STYLING */
+        .ad-post { background: #121212; border: 1px solid #333; margin: 10px; border-radius: 8px; padding: 10px; position: relative; }
+        .ad-tag { position: absolute; top: 10px; right: 10px; font-size: 8px; background: #555; padding: 2px 5px; border-radius: 3px; }
+        
+        .active-tab { display: block !important; }
     </style>
 </head>
 <body>
 
-    <div class="ticker-bar">
-        <div class="ticker-scroll" id="live-prices">BTC: $94,200 | ETH: $3,450 | SOL: $145 | RAS Exam: Sept 2026 | Dubai HQ: 2030 Loading...</div>
+    <div id="auth-screen" class="fixed inset-0 bg-black z-[5000] flex flex-col items-center justify-center p-8 text-center">
+        <h1 class="text-4xl font-black italic mb-2 tracking-tighter text-blue-500">VibeNet</h1>
+        <p class="text-gray-400 text-sm mb-8">Welcome, Mansingh</p>
+        <button onclick="login()" class="w-full bg-[#0095f6] text-white font-bold py-2 rounded-md">Join Community</button>
     </div>
 
-    <div class="p-4 flex justify-between items-center bg-[var(--card)] sticky top-0 z-[1000] border-b dark:border-gray-800">
-        <div class="flex items-center gap-2">
-            <h1 class="text-xl font-black italic">VIBENET</h1>
-            <span class="text-[8px] bg-blue-500 text-white px-2 py-0.5 rounded-full">PRO</span>
-        </div>
-        <div class="flex gap-4 items-center">
-            <div onclick="alert('VibeCoins: 1250')" class="text-xs font-bold bg-yellow-500/20 text-yellow-600 px-3 py-1 rounded-full border border-yellow-500/30">🪙 1,250</div>
-            <button onclick="toggleTheme()"><i class="fas fa-circle-half-stroke text-xl"></i></button>
-        </div>
-    </div>
-
-    <div id="home" class="tab-content active-tab animate-fade-in">
-        <div class="m-4 p-4 bg-black rounded-2xl text-center border border-yellow-500/50">
-            <p class="text-[10px] text-yellow-500 uppercase tracking-widest font-bold">Dubai HQ 2030 Countdown</p>
-            <h2 id="countdown" class="text-2xl mt-1">1,342 Days : 12h : 45m</h2>
+    <div id="home-feed" class="pb-24 pt-4">
+        <div class="px-4 flex justify-between items-center mb-4 border-b border-[#262626] pb-2">
+            <h2 class="text-2xl font-bold italic">VibeNet</h2>
+            <div class="flex gap-5 text-xl">
+                <i class="fab fa-facebook-messenger" onclick="showTab('chat-room')"></i>
+            </div>
         </div>
 
-        <div class="flex gap-4 overflow-x-auto p-4">
-            <div class="flex-none text-center"><div class="w-14 h-14 rounded-full border-2 border-orange-500 p-1"><img src="https://picsum.photos/100/100?1" class="rounded-full"></div><p class="text-[9px] mt-1">Trading</p></div>
-            <div class="flex-none text-center"><div class="w-14 h-14 rounded-full border-2 border-blue-500 p-1"><img src="https://picsum.photos/100/100?2" class="rounded-full"></div><p class="text-[9px] mt-1">Dubai</p></div>
-            <div class="flex-none text-center"><div class="w-14 h-14 rounded-full border-2 border-green-500 p-1"><img src="https://picsum.photos/100/100?3" class="rounded-full"></div><p class="text-[9px] mt-1">Zoology</p></div>
-            <div class="flex-none text-center"><div class="w-14 h-14 rounded-full border-2 border-red-500 p-1"><img src="https://picsum.photos/100/100?4" class="rounded-full"></div><p class="text-[9px] mt-1">SMC</p></div>
+        <div class="ad-post">
+            <span class="ad-tag">SPONSORED</span>
+            <p class="text-blue-400 font-bold text-xs">🚀 Best Prop Firm for Mansingh Fans</p>
+            <p class="text-[10px] text-gray-400">Get 10% off using code 'MANSINGH'</p>
+            <button class="w-full mt-2 bg-blue-600 text-white text-[10px] py-1 rounded">Learn More</button>
         </div>
 
-        <div class="m-4 p-6 bg-gradient-to-br from-indigo-950 to-black rounded-[35px] text-white relative border border-white/10 shadow-2xl overflow-hidden">
-            <div class="absolute top-0 right-0 p-3"><span class="text-[8px] bg-green-500 px-2 py-0.5 rounded-full animate-pulse">SMC V11 LIVE</span></div>
-            <p class="text-[10px] opacity-60 font-bold mb-4 uppercase">Institutional Signal</p>
-            <div class="relative">
-                <div id="lock-ui" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/80 rounded-2xl p-4">
-                    <button onclick="payNow(99)" class="bg-blue-600 px-6 py-2 rounded-full text-xs font-bold mb-2">UNLOCK (₹99)</button>
-                    <button onclick="startAd()" class="text-[10px] underline opacity-50">Watch Ad for access</button>
+        <div class="border-b border-[#262626] mb-4 pb-4">
+            <div class="flex items-center p-3">
+                <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold text-[10px] mr-3">MS</div>
+                <span class="text-sm font-bold">Mansingh <i class="fas fa-check-circle text-blue-500 text-[10px]"></i></span>
+            </div>
+            
+            <div class="bg-gradient-to-br from-gray-900 to-black aspect-square flex flex-col items-center justify-center p-6 border-y border-[#262626]">
+                <h3 class="text-xl font-black text-green-500 underline">VIP TRADING SIGNAL</h3>
+                <p class="text-4xl font-bold mt-2">SELL BTC 📉</p>
+                <p class="text-xs text-gray-400 mt-4 tracking-widest">JOIN TELEGRAM FOR MORE</p>
+                
+                <button onclick="payUPI()" class="mt-8 bg-green-600 text-white text-xs px-6 py-2 rounded-full font-bold shadow-lg">
+                   <i class="fas fa-bolt"></i> SUPPORT MANSINGH (₹10)
+                </button>
+            </div>
+
+            <div class="p-3">
+                <div class="flex justify-between text-2xl mb-2">
+                    <div class="flex gap-5">
+                        <i class="far fa-heart" onclick="this.classList.toggle('fas'); this.style.color='#ff3040'"></i>
+                        <i class="far fa-comment"></i>
+                        <i class="fas fa-retweet text-gray-500"></i>
+                        <i class="far fa-paper-plane"></i>
+                    </div>
                 </div>
-                <div id="blurred-content" class="premium-blur">
-                    <h3 class="text-2xl font-black text-green-400">SELL BTC/USDT</h3>
-                    <p class="text-xs">Entry: 94500 | TP: 91000 | SL: 95200</p>
+                <p class="text-sm font-bold">5,201 likes</p>
+                <p class="text-sm"><span class="font-bold">Mansingh</span> Today's setup is ready. Support the vision! 🇦🇪</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="reels" class="reels-wrapper">
+        <div class="reel-unit flex flex-col justify-end p-6">
+            <div class="absolute inset-0 flex items-center justify-center opacity-10"><i class="fas fa-play text-6xl"></i></div>
+            <div class="absolute top-20 left-4 right-4 bg-black/50 p-2 border border-blue-500 rounded text-center text-[10px]">
+                Ad: Trade with zero spread on Exness. [Register Now]
+            </div>
+            <div class="z-10 mb-20">
+                <h4 class="font-bold">Dubai International Office Tour...</h4>
+                <div class="flex gap-6 mt-4 text-2xl">
+                    <i class="fas fa-heart text-red-500"></i>
+                    <i class="fas fa-comment"></i>
+                    <i class="fas fa-share"></i>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="px-4 mt-6">
-            <h3 class="font-black text-lg mb-4 italic px-2">Services & Tools</h3>
-            <div class="grid grid-cols-3 gap-3">
-                <div class="service-card" onclick="alert('Opening Risk Calculator...')"><i class="fas fa-calculator text-blue-500 mb-2"></i><p class="text-[9px] font-bold">Risk Calc</p></div>
-                <div class="service-card" onclick="alert('Zoology/Botany Notes Loading...')"><i class="fas fa-dna text-green-500 mb-2"></i><p class="text-[9px] font-bold">B.Sc. Notes</p></div>
-                <div class="service-card" onclick="alert('RAS Mock Test Starting...')"><i class="fas fa-university text-orange-500 mb-2"></i><p class="text-[9px] font-bold">RAS Prep</p></div>
-                <div class="service-card" onclick="alert('Heatmap Loading...')"><i class="fas fa-fire text-red-500 mb-2"></i><p class="text-[9px] font-bold">Heatmap</p></div>
-                <div class="service-card" onclick="alert('Opening Copy Trading...')"><i class="fas fa-copy text-indigo-500 mb-2"></i><p class="text-[9px] font-bold">CopyTrade</p></div>
-                <div class="service-card" onclick="alert('Invite Friends...')"><i class="fas fa-users text-pink-500 mb-2"></i><p class="text-[9px] font-bold">Refer&Earn</p></div>
-                <div class="service-card" onclick="alert('Economic Calendar...')"><i class="fas fa-calendar-alt text-gray-500 mb-2"></i><p class="text-[9px] font-bold">Eco-Cal</p></div>
-                <div class="service-card" onclick="alert('Portfolio Sync...')"><i class="fas fa-wallet text-yellow-600 mb-2"></i><p class="text-[9px] font-bold">Portfolio</p></div>
-                <div class="service-card" onclick="alert('Opening Coding Sandbox...')"><i class="fas fa-code text-blue-400 mb-2"></i><p class="text-[9px] font-bold">Pine Editor</p></div>
+    <div id="chat-room" class="p-4 flex flex-col">
+        <div class="flex items-center gap-4 mb-6">
+            <i class="fas fa-arrow-left text-xl" onclick="showTab('home-feed')"></i>
+            <h2 class="text-xl font-bold">Global Chat</h2>
+        </div>
+        <div id="chat-messages" class="flex-1 overflow-y-auto space-y-4 mb-4 text-xs">
+            <div class="bg-blue-900/20 p-3 rounded-lg border border-blue-500/30 text-center mb-4">
+                Mansingh's Official UPI: <span class="text-yellow-500 font-bold">Mandhavesha656@sbi</span>
             </div>
+        </div>
+        <div class="flex gap-2 bg-[#121212] p-2 rounded-full border border-[#333]">
+            <input type="text" id="msg-input" placeholder="Say something..." class="flex-1 bg-transparent px-3 outline-none text-sm">
+            <button onclick="sendMsg()" class="text-blue-500 font-bold px-3">Send</button>
         </div>
     </div>
 
-    <div id="social" class="tab-content animate-fade-in max-w-md mx-auto">
-        <div class="p-4 bg-[var(--card)] m-4 rounded-3xl border dark:border-gray-800">
-            <div class="flex items-center gap-3 mb-4">
-                <img src="https://picsum.photos/50/50" class="rounded-full">
-                <div><h4 class="text-sm font-bold">Surajpal Singh Rathore <i class="fas fa-check-circle text-blue-500"></i></h4><p class="text-[10px] opacity-50">Jaipur, Rajasthan</p></div>
-            </div>
-            <img src="https://picsum.photos/500/300?trading" class="rounded-2xl w-full mb-3">
-            <p class="text-sm">Finally shifted to Jaipur for RAS coaching. Trading & Studies hand in hand! 📚📈</p>
-            <div class="flex gap-6 mt-4 opacity-70 text-lg"><i class="far fa-heart"></i> <i class="far fa-comment"></i> <i class="far fa-paper-plane"></i></div>
-        </div>
-    </div>
-
-    <div class="nav-bar">
-        <button onclick="switchTab('home')" class="text-blue-500"><i class="fas fa-home text-2xl"></i></button>
-        <button onclick="switchTab('social')"><i class="fas fa-compass text-2xl"></i></button>
-        <button onclick="alert('Reels Active')"><i class="fas fa-play-circle text-4xl text-blue-600"></i></button>
-        <button onclick="alert('Global Chat Room Active')"><i class="fas fa-comments text-2xl"></i></button>
-        <button onclick="alert('Settings & Profile')"><i class="fas fa-user-circle text-2xl"></i></button>
+    <div class="nav-bottom">
+        <i class="fas fa-home text-2xl" onclick="showTab('home-feed')"></i>
+        <i class="fas fa-search text-2xl"></i>
+        <i class="fas fa-play-circle text-2xl" onclick="showTab('reels')"></i>
+        <i class="fas fa-user text-2xl" onclick="alert('Mansingh Profile')"></i>
     </div>
 
     <script>
         const UPI_ID = "Mandhavesha656@sbi";
-        function toggleTheme() { document.body.classList.toggle('dark-theme'); }
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active-tab'));
-            document.getElementById(tabId).classList.add('active-tab');
+        function login() { document.getElementById('auth-screen').style.display = 'none'; }
+
+        function showTab(id) {
+            document.querySelectorAll('#home-feed, #reels, #chat-room').forEach(t => t.classList.remove('active-tab'));
+            document.getElementById(id).classList.add('active-tab');
+            if(id === 'reels') { document.getElementById(id).style.display = 'block'; }
+            else { document.getElementById('reels').style.display = 'none'; }
         }
 
-        async function fetchPrices() {
-            try {
-                const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["BTCUSDT","ETHUSDT","XAUUSDT"]');
-                const data = await res.json();
-                let txt = "";
-                data.forEach(c => { txt += ` • ${c.symbol.replace("USDT","")}: $${parseFloat(c.price).toLocaleString()} `; });
-                document.getElementById('live-prices').innerText = txt + " | " + txt;
-            } catch(e) {}
+        function payUPI() {
+            // Opens UPI App with pre-filled details
+            window.location.href = `upi://pay?pa=${UPI_ID}&pn=Mansingh&am=10&cu=INR&tn=SupportVibeNet`;
         }
 
-        function payNow(amount) {
-            window.location.href = `upi://pay?pa=${UPI_ID}&pn=Surajpal%20Singh&am=${amount}&cu=INR&tn=VibeNet%20VIP`;
+        function sendMsg() {
+            const input = document.getElementById('msg-input');
+            if(input.value) {
+                const box = document.getElementById('chat-messages');
+                const div = document.createElement('div');
+                div.className = "flex justify-end";
+                div.innerHTML = `<div class="bg-blue-600 p-2 rounded-lg max-w-[80%]">${input.value}</div>`;
+                box.appendChild(div);
+                input.value = "";
+                box.scrollTop = box.scrollHeight;
+            }
         }
-
-        function startAd() {
-            alert("Starting 5s Sponsor Video... Unlocking Signal.");
-            setTimeout(() => {
-                document.getElementById('blurred-content').classList.remove('premium-blur');
-                document.getElementById('lock-ui').style.display = "none";
-            }, 5000);
-        }
-
-        setInterval(fetchPrices, 3000);
-        fetchPrices();
     </script>
 </body>
-    </html>
-    
+</html>
